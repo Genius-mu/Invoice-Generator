@@ -21,7 +21,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 const Body = () => {
-  const invoiceRef = useRef();
+  const invoiceRef = useRef(null);
   const [showPreview, setShowPreview] = useState(false);
 
   return (
@@ -70,13 +70,35 @@ const Body = () => {
             .min(1, "At least one item required"),
         })}
         onSubmit={async (values) => {
-          const element = invoiceRef.current;
-          const canvas = await html2canvas(element);
+          if (!invoiceRef.current) return;
+
+          const canvas = await html2canvas(invoiceRef.current, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+          });
+
           const imgData = canvas.toDataURL("image/png");
+
           const pdf = new jsPDF("p", "mm", "a4");
           const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+
           const imgHeight = (canvas.height * pageWidth) / canvas.width;
-          pdf.addImage(imgData, "PNG", 0, 0, pageWidth, imgHeight);
+
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
+          heightLeft -= pageHeight;
+n
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
           pdf.save(`invoice-${values.invoiceNum}.pdf`);
         }}
       >
@@ -555,7 +577,6 @@ const Body = () => {
 
                       <button
                         type="submit"
-                        onClick={handleSubmit}
                         className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition shadow-lg hover:shadow-xl font-semibold text-lg"
                       >
                         <Download className="w-5 h-5" />
