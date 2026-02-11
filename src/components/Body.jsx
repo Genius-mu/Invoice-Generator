@@ -91,7 +91,7 @@ const Body = () => {
 
           pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
           heightLeft -= pageHeight;
-n
+
           while (heightLeft > 0) {
             position = heightLeft - imgHeight;
             pdf.addPage();
@@ -100,6 +100,7 @@ n
           }
 
           pdf.save(`invoice-${values.invoiceNum}.pdf`);
+          console.log("SUBMITTING", values);
         }}
       >
         {({
