@@ -1,14 +1,1 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-:root {
-  --body-clr: hsl(0, 0%, 99%);
-}
-body {
-  width: 100%;
-  height: 100%;
-  background: var(--body-clr);
-}
+@import "tailwindcss";
