@@ -1,13 +1,14 @@
 import {
   Asterisk,
-  CloudDrizzle,
+  Building2,
   Download,
-  Hash,
-  House,
+  FileText,
+  User,
   Trash2,
   Eye,
   EyeOff,
   Plus,
+  Receipt,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { Formik, Form, Field } from "formik";
@@ -93,8 +94,8 @@ const Body = () => {
           pdf.text(`#${values.invoiceNum}`, margin, yPos);
           yPos += 3;
 
-          // Blue line under header
-          pdf.setDrawColor(37, 99, 235);
+          // Line under header
+          pdf.setDrawColor(30, 41, 59);
           pdf.setLineWidth(1);
           pdf.line(margin, yPos, pageWidth - margin, yPos);
           yPos += 12;
@@ -102,7 +103,7 @@ const Body = () => {
           // From/To Section
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "bold");
-          pdf.setTextColor(107, 114, 128);
+          pdf.setTextColor(100, 116, 139);
           pdf.text("FROM", margin, yPos);
           pdf.text("BILL TO", pageWidth / 2, yPos);
           yPos += 5;
@@ -116,7 +117,7 @@ const Body = () => {
 
           pdf.setFontSize(9);
           pdf.setFont("helvetica", "normal");
-          pdf.setTextColor(75, 85, 99);
+          pdf.setTextColor(71, 85, 105);
 
           const businessLines = values.BusinessAddress.split("\n");
           businessLines.forEach((line) => {
@@ -149,12 +150,12 @@ const Body = () => {
           yPos += 10;
 
           // Dates
-          pdf.setFillColor(249, 250, 251);
+          pdf.setFillColor(248, 250, 252);
           pdf.rect(margin, yPos, pageWidth - 2 * margin, 12, "F");
 
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "bold");
-          pdf.setTextColor(107, 114, 128);
+          pdf.setTextColor(100, 116, 139);
           pdf.text("INVOICE DATE", margin + 5, yPos + 5);
           pdf.text("DUE DATE", pageWidth / 2, yPos + 5);
 
@@ -168,21 +169,21 @@ const Body = () => {
           // Items Table Header
           pdf.setFontSize(9);
           pdf.setFont("helvetica", "bold");
-          pdf.setTextColor(55, 65, 81);
+          pdf.setTextColor(30, 41, 59);
           pdf.text("DESCRIPTION", margin, yPos);
           pdf.text("QTY", pageWidth - margin - 70, yPos);
           pdf.text("RATE", pageWidth - margin - 50, yPos);
           pdf.text("AMOUNT", pageWidth - margin - 30, yPos, { align: "right" });
           yPos += 3;
 
-          pdf.setDrawColor(209, 213, 219);
+          pdf.setDrawColor(203, 213, 225);
           pdf.setLineWidth(0.5);
           pdf.line(margin, yPos, pageWidth - margin, yPos);
           yPos += 6;
 
           // Items
           pdf.setFont("helvetica", "normal");
-          pdf.setTextColor(31, 41, 55);
+          pdf.setTextColor(15, 23, 42);
           values.items.forEach((item) => {
             pdf.text(item.description, margin, yPos);
             pdf.text(item.qty.toString(), pageWidth - margin - 70, yPos);
@@ -197,7 +198,7 @@ const Body = () => {
             pdf.setFont("helvetica", "normal");
             yPos += 6;
 
-            pdf.setDrawColor(229, 231, 235);
+            pdf.setDrawColor(226, 232, 240);
             pdf.line(margin, yPos, pageWidth - margin, yPos);
             yPos += 6;
           });
@@ -223,7 +224,7 @@ const Body = () => {
           });
           yPos += 3;
 
-          pdf.setDrawColor(209, 213, 219);
+          pdf.setDrawColor(203, 213, 225);
           pdf.setLineWidth(0.5);
           pdf.line(totalsX, yPos, pageWidth - margin, yPos);
           yPos += 5;
@@ -231,7 +232,7 @@ const Body = () => {
           pdf.setFontSize(11);
           pdf.setFont("helvetica", "bold");
           pdf.text("Total:", totalsX, yPos);
-          pdf.setTextColor(37, 99, 235);
+          pdf.setTextColor(30, 41, 59);
           pdf.setFontSize(14);
           pdf.text(`$${total.toFixed(2)}`, pageWidth - margin - 5, yPos, {
             align: "right",
@@ -242,18 +243,18 @@ const Body = () => {
           // Notes
           if (values.Notes) {
             yPos += 5;
-            pdf.setFillColor(249, 250, 251);
+            pdf.setFillColor(248, 250, 252);
             const notesHeight = 20;
             pdf.rect(margin, yPos, pageWidth - 2 * margin, notesHeight, "F");
 
             pdf.setFontSize(8);
             pdf.setFont("helvetica", "bold");
-            pdf.setTextColor(107, 114, 128);
+            pdf.setTextColor(100, 116, 139);
             pdf.text("NOTES", margin + 5, yPos + 5);
 
             pdf.setFontSize(9);
             pdf.setFont("helvetica", "normal");
-            pdf.setTextColor(55, 65, 81);
+            pdf.setTextColor(71, 85, 105);
             const splitNotes = pdf.splitTextToSize(
               values.Notes,
               pageWidth - 2 * margin - 10,
@@ -265,7 +266,7 @@ const Body = () => {
           // Footer
           pdf.setFontSize(8);
           pdf.setFont("helvetica", "normal");
-          pdf.setTextColor(107, 114, 128);
+          pdf.setTextColor(100, 116, 139);
           pdf.text(
             "Thank you for your business!",
             pageWidth / 2,
@@ -292,30 +293,22 @@ const Body = () => {
         const total = subtotal + taxAmount;
 
         return (
-          <Form className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <div className="container mx-auto px-4 py-8 max-w-7xl">
-              {/* Header */}
-              <div className="mb-8 text-center">
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                  Invoice Generator
-                </h1>
-                <p className="text-gray-600">
-                  Create professional invoices in minutes
-                </p>
-              </div>
-
+          <Form className="min-h-screen bg-slate-50">
+            <div className="container mx-auto px-4 py-10 max-w-7xl">
               <div className="grid lg:grid-cols-2 gap-8">
                 {/* Form Section */}
                 <div className="space-y-6">
                   {/* Invoice Details Card */}
-                  <div className="bg-white rounded-xl shadow-lg p-6 space-y-5">
-                    <div className="flex items-center gap-2 pb-3 border-b-2 border-gray-200">
-                      <Hash
-                        size={24}
-                        className="text-blue-600"
-                        strokeWidth={2.5}
-                      />
-                      <h2 className="text-xl font-bold text-gray-800">
+                  <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
+                      <div className="p-2 bg-slate-100 rounded-lg">
+                        <FileText
+                          size={20}
+                          className="text-slate-700"
+                          strokeWidth={2}
+                        />
+                      </div>
+                      <h2 className="text-lg font-semibold text-slate-900">
                         Invoice Details
                       </h2>
                     </div>
@@ -323,18 +316,18 @@ const Body = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Invoice Number */}
                       <div>
-                        <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                          Invoice #{" "}
-                          <Asterisk size={10} className="text-red-500" />
+                        <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                          Invoice #
+                          <Asterisk size={8} className="text-red-500" />
                         </label>
                         <Field
                           type="text"
                           name="invoiceNum"
                           placeholder="INV-001"
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                         />
                         {touched.invoiceNum && errors.invoiceNum && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="text-red-600 text-xs mt-1.5">
                             {errors.invoiceNum}
                           </p>
                         )}
@@ -342,16 +335,16 @@ const Body = () => {
 
                       {/* Invoice Date */}
                       <div>
-                        <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                          Date <Asterisk size={10} className="text-red-500" />
+                        <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                          Date <Asterisk size={8} className="text-red-500" />
                         </label>
                         <Field
                           type="date"
                           name="invoiceDate"
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                         />
                         {touched.invoiceDate && errors.invoiceDate && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="text-red-600 text-xs mt-1.5">
                             {errors.invoiceDate}
                           </p>
                         )}
@@ -359,17 +352,17 @@ const Body = () => {
 
                       {/* Due Date */}
                       <div>
-                        <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                          Due Date{" "}
-                          <Asterisk size={10} className="text-red-500" />
+                        <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                          Due Date
+                          <Asterisk size={8} className="text-red-500" />
                         </label>
                         <Field
                           type="date"
                           name="dueDate"
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                         />
                         {touched.dueDate && errors.dueDate && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="text-red-600 text-xs mt-1.5">
                             {errors.dueDate}
                           </p>
                         )}
@@ -378,32 +371,34 @@ const Body = () => {
                   </div>
 
                   {/* Business Info Card */}
-                  <div className="bg-white rounded-xl shadow-lg p-6 space-y-5">
-                    <div className="flex items-center gap-2 pb-3 border-b-2 border-blue-100">
-                      <House
-                        size={22}
-                        className="text-blue-600"
-                        strokeWidth={2.5}
-                      />
-                      <h2 className="text-xl font-bold text-gray-800">
+                  <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
+                      <div className="p-2 bg-slate-100 rounded-lg">
+                        <Building2
+                          size={20}
+                          className="text-slate-700"
+                          strokeWidth={2}
+                        />
+                      </div>
+                      <h2 className="text-lg font-semibold text-slate-900">
                         Your Business
                       </h2>
                     </div>
 
                     <div className="space-y-4">
                       <div>
-                        <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                          Business Name{" "}
-                          <Asterisk size={10} className="text-red-500" />
+                        <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                          Business Name
+                          <Asterisk size={8} className="text-red-500" />
                         </label>
                         <Field
                           type="text"
                           name="BusinessName"
                           placeholder="Acme Corp"
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                         />
                         {touched.BusinessName && errors.BusinessName && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="text-red-600 text-xs mt-1.5">
                             {errors.BusinessName}
                           </p>
                         )}
@@ -411,36 +406,36 @@ const Body = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                            Email{" "}
-                            <Asterisk size={10} className="text-red-500" />
+                          <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                            Email
+                            <Asterisk size={8} className="text-red-500" />
                           </label>
                           <Field
                             type="email"
                             name="BusinessEmail"
                             placeholder="hello@acme.com"
-                            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                           />
                           {touched.BusinessEmail && errors.BusinessEmail && (
-                            <p className="text-red-500 text-xs mt-1">
+                            <p className="text-red-600 text-xs mt-1.5">
                               {errors.BusinessEmail}
                             </p>
                           )}
                         </div>
 
                         <div>
-                          <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                            Phone{" "}
-                            <Asterisk size={10} className="text-red-500" />
+                          <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                            Phone
+                            <Asterisk size={8} className="text-red-500" />
                           </label>
                           <Field
                             type="text"
                             name="BusinessPhone"
                             placeholder="+1 (555) 123-4567"
-                            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                           />
                           {touched.BusinessPhone && errors.BusinessPhone && (
-                            <p className="text-red-500 text-xs mt-1">
+                            <p className="text-red-600 text-xs mt-1.5">
                               {errors.BusinessPhone}
                             </p>
                           )}
@@ -448,19 +443,19 @@ const Body = () => {
                       </div>
 
                       <div>
-                        <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                          Address{" "}
-                          <Asterisk size={10} className="text-red-500" />
+                        <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                          Address
+                          <Asterisk size={8} className="text-red-500" />
                         </label>
                         <Field
                           as="textarea"
                           name="BusinessAddress"
                           placeholder="123 Business St, Suite 100&#10;City, State 12345"
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition resize-none bg-white"
                           rows="2"
                         />
                         {touched.BusinessAddress && errors.BusinessAddress && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="text-red-600 text-xs mt-1.5">
                             {errors.BusinessAddress}
                           </p>
                         )}
@@ -469,32 +464,34 @@ const Body = () => {
                   </div>
 
                   {/* Client Info Card */}
-                  <div className="bg-white rounded-xl shadow-lg p-6 space-y-5">
-                    <div className="flex items-center gap-2 pb-3 border-b-2 border-indigo-100">
-                      <CloudDrizzle
-                        size={22}
-                        className="text-indigo-600"
-                        strokeWidth={2.5}
-                      />
-                      <h2 className="text-xl font-bold text-gray-800">
-                        Client
+                  <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
+                      <div className="p-2 bg-slate-100 rounded-lg">
+                        <User
+                          size={20}
+                          className="text-slate-700"
+                          strokeWidth={2}
+                        />
+                      </div>
+                      <h2 className="text-lg font-semibold text-slate-900">
+                        Client Information
                       </h2>
                     </div>
 
                     <div className="space-y-4">
                       <div>
-                        <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                          Client Name{" "}
-                          <Asterisk size={10} className="text-red-500" />
+                        <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                          Client Name
+                          <Asterisk size={8} className="text-red-500" />
                         </label>
                         <Field
                           type="text"
                           name="ClientName"
                           placeholder="John Doe"
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                         />
                         {touched.ClientName && errors.ClientName && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="text-red-600 text-xs mt-1.5">
                             {errors.ClientName}
                           </p>
                         )}
@@ -502,36 +499,36 @@ const Body = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                            Email{" "}
-                            <Asterisk size={10} className="text-red-500" />
+                          <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                            Email
+                            <Asterisk size={8} className="text-red-500" />
                           </label>
                           <Field
                             type="email"
                             name="ClientEmail"
                             placeholder="john@example.com"
-                            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                           />
                           {touched.ClientEmail && errors.ClientEmail && (
-                            <p className="text-red-500 text-xs mt-1">
+                            <p className="text-red-600 text-xs mt-1.5">
                               {errors.ClientEmail}
                             </p>
                           )}
                         </div>
 
                         <div>
-                          <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                            Phone{" "}
-                            <Asterisk size={10} className="text-red-500" />
+                          <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                            Phone
+                            <Asterisk size={8} className="text-red-500" />
                           </label>
                           <Field
                             type="text"
                             name="ClientPhone"
                             placeholder="+1 (555) 999-0000"
-                            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                           />
                           {touched.ClientPhone && errors.ClientPhone && (
-                            <p className="text-red-500 text-xs mt-1">
+                            <p className="text-red-600 text-xs mt-1.5">
                               {errors.ClientPhone}
                             </p>
                           )}
@@ -539,19 +536,19 @@ const Body = () => {
                       </div>
 
                       <div>
-                        <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                          Address{" "}
-                          <Asterisk size={10} className="text-red-500" />
+                        <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                          Address
+                          <Asterisk size={8} className="text-red-500" />
                         </label>
                         <Field
                           as="textarea"
                           name="ClientAddress"
                           placeholder="456 Client Ave&#10;City, State 67890"
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition resize-none bg-white"
                           rows="2"
                         />
                         {touched.ClientAddress && errors.ClientAddress && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="text-red-600 text-xs mt-1.5">
                             {errors.ClientAddress}
                           </p>
                         )}
@@ -560,18 +557,27 @@ const Body = () => {
                   </div>
 
                   {/* Items Card */}
-                  <div className="bg-white rounded-xl shadow-lg p-6 space-y-5">
-                    <h2 className="text-xl font-bold text-gray-800">
-                      Line Items
-                    </h2>
+                  <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
+                      <div className="p-2 bg-slate-100 rounded-lg">
+                        <Receipt
+                          size={20}
+                          className="text-slate-700"
+                          strokeWidth={2}
+                        />
+                      </div>
+                      <h2 className="text-lg font-semibold text-slate-900">
+                        Line Items
+                      </h2>
+                    </div>
 
                     {values.items.map((item, index) => (
                       <div
                         key={index}
-                        className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 space-y-3"
+                        className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3"
                       >
                         <div className="flex justify-between items-center">
-                          <span className="font-semibold text-gray-700">
+                          <span className="font-medium text-slate-900 text-sm">
                             Item {index + 1}
                           </span>
                           {values.items.length > 1 && (
@@ -583,28 +589,28 @@ const Body = () => {
                                   values.items.filter((_, i) => i !== index),
                                 )
                               }
-                              className="flex items-center gap-1 text-red-600 hover:text-red-800 font-medium transition text-sm"
+                              className="flex items-center gap-1.5 text-red-600 hover:text-red-700 font-medium transition text-sm hover:bg-red-50 px-2 py-1 rounded"
                             >
-                              <Trash2 size={16} strokeWidth={2.5} />
+                              <Trash2 size={14} strokeWidth={2} />
                               Remove
                             </button>
                           )}
                         </div>
 
                         <div>
-                          <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                            Description{" "}
-                            <Asterisk size={10} className="text-red-500" />
+                          <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                            Description
+                            <Asterisk size={8} className="text-red-500" />
                           </label>
                           <Field
                             type="text"
                             name={`items[${index}].description`}
                             placeholder="Web design services"
-                            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                           />
                           {touched.items?.[index]?.description &&
                             errors.items?.[index]?.description && (
-                              <p className="text-red-500 text-xs mt-1">
+                              <p className="text-red-600 text-xs mt-1.5">
                                 {errors.items[index].description}
                               </p>
                             )}
@@ -612,16 +618,16 @@ const Body = () => {
 
                         <div className="grid grid-cols-3 gap-3">
                           <div>
-                            <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                              Qty{" "}
-                              <Asterisk size={10} className="text-red-500" />
+                            <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                              Qty
+                              <Asterisk size={8} className="text-red-500" />
                             </label>
                             <Field
                               type="number"
                               name={`items[${index}].qty`}
                               min="0"
                               step="1"
-                              className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                               onChange={(e) => {
                                 const newQty = Number(e.target.value) || 0;
                                 setFieldValue(`items[${index}].qty`, newQty);
@@ -634,23 +640,23 @@ const Body = () => {
                             />
                             {touched.items?.[index]?.qty &&
                               errors.items?.[index]?.qty && (
-                                <p className="text-red-500 text-xs mt-1">
+                                <p className="text-red-600 text-xs mt-1.5">
                                   {errors.items[index].qty}
                                 </p>
                               )}
                           </div>
 
                           <div>
-                            <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                              Rate{" "}
-                              <Asterisk size={10} className="text-red-500" />
+                            <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                              Rate
+                              <Asterisk size={8} className="text-red-500" />
                             </label>
                             <Field
                               type="number"
                               name={`items[${index}].rate`}
                               min="0"
                               step="0.01"
-                              className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                               onChange={(e) => {
                                 const newRate = Number(e.target.value) || 0;
                                 setFieldValue(`items[${index}].rate`, newRate);
@@ -663,17 +669,17 @@ const Body = () => {
                             />
                             {touched.items?.[index]?.rate &&
                               errors.items?.[index]?.rate && (
-                                <p className="text-red-500 text-xs mt-1">
+                                <p className="text-red-600 text-xs mt-1.5">
                                   {errors.items[index].rate}
                                 </p>
                               )}
                           </div>
 
                           <div>
-                            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
+                            <label className="text-sm font-medium text-slate-700 mb-2 block">
                               Amount
                             </label>
-                            <div className="px-3 py-2.5 border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-700 font-semibold">
+                            <div className="px-3 py-2 border border-slate-200 rounded-md bg-slate-100 text-slate-900 font-medium">
                               ${item.amount.toFixed(2)}
                             </div>
                           </div>
@@ -689,20 +695,20 @@ const Body = () => {
                           { description: "", qty: 1, rate: 0, amount: 0 },
                         ])
                       }
-                      className="w-full py-3 border-2 border-dashed border-gray-400 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-blue-500 hover:text-blue-600 transition flex items-center justify-center gap-2"
+                      className="w-full py-2.5 border-2 border-dashed border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 hover:border-slate-900 transition flex items-center justify-center gap-2"
                     >
-                      <Plus size={20} strokeWidth={2.5} />
+                      <Plus size={18} strokeWidth={2} />
                       Add Item
                     </button>
                   </div>
 
                   {/* Tax & Notes */}
-                  <div className="bg-white rounded-xl shadow-lg p-6 space-y-5">
+                  <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-1.5">
-                          Tax Rate (%){" "}
-                          <Asterisk size={10} className="text-red-500" />
+                        <label className="flex items-center gap-1 text-sm font-medium text-slate-700 mb-2">
+                          Tax Rate (%)
+                          <Asterisk size={8} className="text-red-500" />
                         </label>
                         <Field
                           type="number"
@@ -710,53 +716,53 @@ const Body = () => {
                           min="0"
                           step="0.01"
                           placeholder="8.5"
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition bg-white"
                         />
                         {touched.TaxRate && errors.TaxRate && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="text-red-600 text-xs mt-1.5">
                             {errors.TaxRate}
                           </p>
                         )}
                       </div>
 
                       <div>
-                        <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">
                           Notes (Optional)
                         </label>
                         <Field
                           as="textarea"
                           name="Notes"
                           placeholder="Payment terms, thank you message..."
-                          className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition resize-none bg-white"
                           rows="2"
                         />
                       </div>
                     </div>
 
                     {/* Totals Summary */}
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 space-y-2">
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2.5">
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-700 font-medium">
+                        <span className="text-slate-600 font-medium">
                           Subtotal:
                         </span>
-                        <span className="text-gray-900 font-semibold">
+                        <span className="text-slate-900 font-semibold">
                           ${subtotal.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-700 font-medium">
+                        <span className="text-slate-600 font-medium">
                           Tax ({values.TaxRate}%):
                         </span>
-                        <span className="text-gray-900 font-semibold">
+                        <span className="text-slate-900 font-semibold">
                           ${taxAmount.toFixed(2)}
                         </span>
                       </div>
-                      <div className="border-t-2 border-blue-200 pt-2 mt-2">
+                      <div className="border-t-2 border-slate-300 pt-2.5 mt-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-lg font-bold text-gray-800">
+                          <span className="text-base font-bold text-slate-900">
                             Total:
                           </span>
-                          <span className="text-2xl font-bold text-blue-600">
+                          <span className="text-2xl font-bold text-slate-900">
                             ${total.toFixed(2)}
                           </span>
                         </div>
@@ -769,16 +775,16 @@ const Body = () => {
                     <button
                       type="button"
                       onClick={() => setShowPreview(!showPreview)}
-                      className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition shadow-md hover:shadow-lg"
+                      className="flex-1 bg-white border-2 border-slate-300 hover:border-slate-900 text-slate-900 font-medium py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition shadow-sm hover:shadow"
                     >
                       {showPreview ? (
                         <>
-                          <EyeOff size={20} strokeWidth={2.5} />
+                          <EyeOff size={18} strokeWidth={2} />
                           Hide Preview
                         </>
                       ) : (
                         <>
-                          <Eye size={20} strokeWidth={2.5} />
+                          <Eye size={18} strokeWidth={2} />
                           Show Preview
                         </>
                       )}
@@ -786,9 +792,9 @@ const Body = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition shadow-md hover:shadow-lg disabled:cursor-not-allowed"
+                      className="flex-1 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition shadow-sm hover:shadow disabled:cursor-not-allowed"
                     >
-                      <Download size={20} strokeWidth={2.5} />
+                      <Download size={18} strokeWidth={2} />
                       {isSubmitting ? "Generating..." : "Download PDF"}
                     </button>
                   </div>
@@ -797,9 +803,11 @@ const Body = () => {
                 {/* Preview Section */}
                 {showPreview && (
                   <div className="lg:sticky lg:top-8 h-fit">
-                    <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
-                      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6">
-                        <h3 className="font-bold text-lg">Invoice Preview</h3>
+                    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-lg">
+                      <div className="bg-slate-900 text-white py-3 px-6 border-b border-slate-700">
+                        <h3 className="font-semibold text-base">
+                          Invoice Preview
+                        </h3>
                       </div>
                       <div
                         ref={invoiceRef}
@@ -807,11 +815,11 @@ const Body = () => {
                         style={{ minHeight: "800px" }}
                       >
                         {/* Invoice Header */}
-                        <div className="border-b-4 border-blue-600 pb-6 mb-8">
-                          <h1 className="text-5xl font-bold text-gray-900 mb-2">
+                        <div className="border-b-2 border-slate-900 pb-6 mb-8">
+                          <h1 className="text-5xl font-bold text-slate-900 mb-2">
                             INVOICE
                           </h1>
-                          <p className="text-gray-600 text-lg">
+                          <p className="text-slate-600 text-base">
                             #{values.invoiceNum || "---"}
                           </p>
                         </div>
@@ -819,13 +827,13 @@ const Body = () => {
                         {/* From/To Section */}
                         <div className="grid grid-cols-2 gap-8 mb-8">
                           <div>
-                            <p className="text-xs font-bold text-gray-500 uppercase mb-2">
+                            <p className="text-xs font-semibold text-slate-500 uppercase mb-2 tracking-wide">
                               From
                             </p>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                            <h3 className="text-lg font-bold text-slate-900 mb-2">
                               {values.BusinessName || "Your Business"}
                             </h3>
-                            <div className="text-sm text-gray-600 space-y-1">
+                            <div className="text-sm text-slate-600 space-y-1">
                               <p>
                                 {values.BusinessAddress || "Business Address"}
                               </p>
@@ -836,13 +844,13 @@ const Body = () => {
                             </div>
                           </div>
                           <div>
-                            <p className="text-xs font-bold text-gray-500 uppercase mb-2">
+                            <p className="text-xs font-semibold text-slate-500 uppercase mb-2 tracking-wide">
                               Bill To
                             </p>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                            <h3 className="text-lg font-bold text-slate-900 mb-2">
                               {values.ClientName || "Client Name"}
                             </h3>
-                            <div className="text-sm text-gray-600 space-y-1">
+                            <div className="text-sm text-slate-600 space-y-1">
                               <p>{values.ClientAddress || "Client Address"}</p>
                               <p>{values.ClientEmail || "client@email.com"}</p>
                               <p>{values.ClientPhone || "Client Phone"}</p>
@@ -851,20 +859,20 @@ const Body = () => {
                         </div>
 
                         {/* Dates */}
-                        <div className="grid grid-cols-2 gap-4 mb-8 bg-gray-50 p-4 rounded-lg">
+                        <div className="grid grid-cols-2 gap-4 mb-8 bg-slate-50 p-4 rounded-lg border border-slate-200">
                           <div>
-                            <p className="text-xs font-bold text-gray-500 uppercase">
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                               Invoice Date
                             </p>
-                            <p className="text-sm font-semibold text-gray-900">
+                            <p className="text-sm font-semibold text-slate-900 mt-1">
                               {values.invoiceDate || "---"}
                             </p>
                           </div>
                           <div>
-                            <p className="text-xs font-bold text-gray-500 uppercase">
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                               Due Date
                             </p>
-                            <p className="text-sm font-semibold text-gray-900">
+                            <p className="text-sm font-semibold text-slate-900 mt-1">
                               {values.dueDate || "---"}
                             </p>
                           </div>
@@ -874,17 +882,17 @@ const Body = () => {
                         <div className="mb-8">
                           <table className="w-full">
                             <thead>
-                              <tr className="border-b-2 border-gray-300">
-                                <th className="text-left py-3 px-2 text-sm font-bold text-gray-700 uppercase">
+                              <tr className="border-b-2 border-slate-300">
+                                <th className="text-left py-3 px-2 text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                   Description
                                 </th>
-                                <th className="text-center py-3 px-2 text-sm font-bold text-gray-700 uppercase">
+                                <th className="text-center py-3 px-2 text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                   Qty
                                 </th>
-                                <th className="text-center py-3 px-2 text-sm font-bold text-gray-700 uppercase">
+                                <th className="text-center py-3 px-2 text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                   Rate
                                 </th>
-                                <th className="text-right py-3 px-2 text-sm font-bold text-gray-700 uppercase">
+                                <th className="text-right py-3 px-2 text-xs font-semibold text-slate-700 uppercase tracking-wide">
                                   Amount
                                 </th>
                               </tr>
@@ -893,18 +901,18 @@ const Body = () => {
                               {values.items.map((item, i) => (
                                 <tr
                                   key={i}
-                                  className="border-b border-gray-200"
+                                  className="border-b border-slate-200"
                                 >
-                                  <td className="py-3 px-2 text-sm text-gray-800">
+                                  <td className="py-3 px-2 text-sm text-slate-800">
                                     {item.description || "---"}
                                   </td>
-                                  <td className="py-3 px-2 text-sm text-gray-800 text-center">
+                                  <td className="py-3 px-2 text-sm text-slate-800 text-center">
                                     {item.qty}
                                   </td>
-                                  <td className="py-3 px-2 text-sm text-gray-800 text-center">
+                                  <td className="py-3 px-2 text-sm text-slate-800 text-center">
                                     ${item.rate.toFixed(2)}
                                   </td>
-                                  <td className="py-3 px-2 text-sm font-semibold text-gray-900 text-right">
+                                  <td className="py-3 px-2 text-sm font-semibold text-slate-900 text-right">
                                     ${item.amount.toFixed(2)}
                                   </td>
                                 </tr>
@@ -917,25 +925,25 @@ const Body = () => {
                         <div className="flex justify-end mb-8">
                           <div className="w-64 space-y-2">
                             <div className="flex justify-between text-sm">
-                              <span className="text-gray-700">Subtotal:</span>
-                              <span className="font-semibold text-gray-900">
+                              <span className="text-slate-600">Subtotal:</span>
+                              <span className="font-semibold text-slate-900">
                                 ${subtotal.toFixed(2)}
                               </span>
                             </div>
                             <div className="flex justify-between text-sm">
-                              <span className="text-gray-700">
+                              <span className="text-slate-600">
                                 Tax ({values.TaxRate}%):
                               </span>
-                              <span className="font-semibold text-gray-900">
+                              <span className="font-semibold text-slate-900">
                                 ${taxAmount.toFixed(2)}
                               </span>
                             </div>
-                            <div className="border-t-2 border-gray-300 pt-2 mt-2">
+                            <div className="border-t-2 border-slate-300 pt-2 mt-2">
                               <div className="flex justify-between">
-                                <span className="text-lg font-bold text-gray-900">
+                                <span className="text-base font-bold text-slate-900">
                                   Total:
                                 </span>
-                                <span className="text-2xl font-bold text-blue-600">
+                                <span className="text-2xl font-bold text-slate-900">
                                   ${total.toFixed(2)}
                                 </span>
                               </div>
@@ -945,19 +953,19 @@ const Body = () => {
 
                         {/* Notes */}
                         {values.Notes && (
-                          <div className="bg-gray-50 p-4 rounded-lg">
-                            <p className="text-xs font-bold text-gray-500 uppercase mb-2">
+                          <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg">
+                            <p className="text-xs font-semibold text-slate-500 uppercase mb-2 tracking-wide">
                               Notes
                             </p>
-                            <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                            <p className="text-sm text-slate-700 whitespace-pre-wrap">
                               {values.Notes}
                             </p>
                           </div>
                         )}
 
                         {/* Footer */}
-                        <div className="mt-12 pt-6 border-t border-gray-200 text-center">
-                          <p className="text-xs text-gray-500">
+                        <div className="mt-12 pt-6 border-t border-slate-200 text-center">
+                          <p className="text-xs text-slate-500">
                             Thank you for your business!
                           </p>
                         </div>
